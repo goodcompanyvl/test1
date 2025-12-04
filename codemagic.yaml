@@ -11,7 +11,7 @@ workflows:
         bundle_identifier: com.jamalnasser.pdfly # <-- Put the Bundle ID without ""
       vars:
         BUNDLE_ID: "com.jamalnasser.pdfly" # <-- Put the Bundle ID
-        XCODE_SCHEME: "PDFFly" # <-- Put the name of your Xcode scheme HERE AND IN 29 LINE !!!!!!
+        XCODE_SCHEME: "PDFly" # <-- Put the name of your Xcode scheme HERE AND IN 29 LINE !!!!!!
         APP_STORE_APPLE_ID: 6756017732 # <-- Put the Apple ID from Appstoreconnect
       xcode: latest
     scripts:
@@ -26,7 +26,7 @@ workflows:
       - name: Build ipa for distribution
         script: |
           xcode-project build-ipa \
-            --project "PDFFly.xcodeproj" \
+            --project "PDFly.xcodeproj" \
             --scheme "$XCODE_SCHEME"
     artifacts:
       - build/ios/ipa/*.ipa
