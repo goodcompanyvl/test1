@@ -1,0 +1,45 @@
+workflows:
+  name-workflow:
+    name: WorkSide
+    max_build_duration: 120
+    instance_type: mac_mini_m1
+    integrations:
+      app_store_connect: InvestSmart # <-- APIKEY NAME FROM CODEMAGIC
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.huliaievandrii.investsmart # <-- Put the Bundle ID without ""
+      vars:
+        BUNDLE_ID: "com.huliaievandrii.investsmart" # <-- Put the Bundle ID
+        XCODE_SCHEME: "FinMate" # <-- Put the name of your Xcode scheme HERE AND IN 29 LINE !!!!!!
+        APP_STORE_APPLE_ID: 6743489936 # <-- Put the Apple ID from Appstoreconnect
+      xcode: latest
+    scripts:
+      - name: Set up provisioning profiles settings on Xcode project
+        script: xcode-project use-profiles
+      - name: Increment build number
+        script: |
+          #!/bin/sh
+          cd $CM_BUILD_DIR
+          LATEST_BUILD_NUMBER=$(app-store-connect get-latest-app-store-build-number "$APP_STORE_APPLE_ID")
+          agvtool new-version -all $(($LATEST_BUILD_NUMBER + 1))
+      - name: Build ipa for distribution
+        script: |
+          xcode-project build-ipa \
+            --project "FinMate.xcodeproj" \
+            --scheme "$XCODE_SCHEME"
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
+      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_app_store: true
+      email:
+        recipients:
+          - 13magomedov.osman13@gmail.com  # <-- Put the Email for getting info about result of Build
+        notify:
+          success: true
+          failure: true
